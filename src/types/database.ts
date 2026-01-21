@@ -127,9 +127,81 @@ export interface ChatMessage {
   created_at: string;
 }
 
+// Rich Content Types
+export type RichContentType = 
+  | 'boat_card'
+  | 'boat_carousel'
+  | 'booking_calendar'
+  | 'booking_summary'
+  | 'quick_actions';
+
 export interface RichContent {
-  type: 'boat_card' | 'booking_form' | 'calendar' | 'checkout';
-  data: unknown;
+  type: RichContentType;
+  data: RichContentData;
+}
+
+export type RichContentData = 
+  | BoatCardData
+  | BoatCarouselData
+  | BookingCalendarData
+  | BookingSummaryData
+  | QuickActionsData;
+
+export interface BoatCardData {
+  type: 'boat_card';
+  boat: {
+    id: string;
+    name: string;
+    type: string;
+    description?: string;
+    capacity: number;
+    base_price: number;
+    length_meters?: number;
+    has_crew?: boolean;
+    photos: Array<{ url: string; is_primary?: boolean }>;
+    owner?: {
+      marina_name: string;
+      city?: string;
+      state?: string;
+    };
+  };
+}
+
+export interface BoatCarouselData {
+  type: 'boat_carousel';
+  title?: string;
+  boats: BoatCardData['boat'][];
+}
+
+export interface BookingCalendarData {
+  type: 'booking_calendar';
+  boatId: string;
+  boatName: string;
+  availableDates: string[];
+  blockedDates: string[];
+  selectedDate?: string;
+}
+
+export interface BookingSummaryData {
+  type: 'booking_summary';
+  booking: {
+    boatId: string;
+    boatName: string;
+    date: string;
+    passengers: number;
+    basePrice: number;
+    totalPrice: number;
+    depositAmount?: number;
+  };
+}
+
+export interface QuickActionsData {
+  type: 'quick_actions';
+  actions: Array<{
+    label: string;
+    action: string;
+    variant?: 'primary' | 'secondary' | 'outline';
+  }>;
 }
 
 export const BOAT_TYPE_LABELS: Record<BoatType, string> = {

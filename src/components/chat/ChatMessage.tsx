@@ -1,13 +1,95 @@
 import { User, Sparkles } from 'lucide-react';
-import { ChatMessage as ChatMessageType } from '@/types/database';
+import { 
+  ChatMessage as ChatMessageType, 
+  RichContent,
+  BoatCardData, 
+  BoatCarouselData, 
+  BookingCalendarData, 
+  BookingSummaryData, 
+  QuickActionsData 
+} from '@/types/database';
 import { cn } from '@/lib/utils';
+import { BoatCard, BoatCarousel, BookingCalendar, BookingSummary, QuickActions } from './rich';
 
 interface ChatMessageProps {
   message: ChatMessageType;
+  onSendMessage?: (message: string) => void;
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, onSendMessage }: ChatMessageProps) {
   const isUser = message.role === 'user';
+
+  const handleBookBoat = (boatId: string) => {
+    onSendMessage?.(`Quero reservar a embarcação ${boatId}`);
+  };
+
+  const handleFavoriteBoat = (boatId: string) => {
+    // TODO: Implement favorite logic
+    console.log('Favorited boat:', boatId);
+  };
+
+  const handleSelectDate = (date: string) => {
+    onSendMessage?.(`Selecionei a data ${date}`);
+  };
+
+  const handleQuickAction = (action: string) => {
+    onSendMessage?.(action);
+  };
+
+  const renderRichContent = (richContent: RichContent) => {
+    switch (richContent.type) {
+      case 'boat_card': {
+        const data = richContent.data as BoatCardData;
+        return (
+          <BoatCard
+            boat={data.boat}
+            onBook={handleBookBoat}
+            onFavorite={handleFavoriteBoat}
+          />
+        );
+      }
+      case 'boat_carousel': {
+        const data = richContent.data as BoatCarouselData;
+        return (
+          <BoatCarousel
+            data={data}
+            onBook={handleBookBoat}
+            onFavorite={handleFavoriteBoat}
+          />
+        );
+      }
+      case 'booking_calendar': {
+        const data = richContent.data as BookingCalendarData;
+        return (
+          <BookingCalendar
+            data={data}
+            onSelectDate={handleSelectDate}
+          />
+        );
+      }
+      case 'booking_summary': {
+        const data = richContent.data as BookingSummaryData;
+        return (
+          <BookingSummary
+            data={data}
+            onConfirm={() => onSendMessage?.('Confirmar reserva')}
+            onCancel={() => onSendMessage?.('Cancelar reserva')}
+          />
+        );
+      }
+      case 'quick_actions': {
+        const data = richContent.data as QuickActionsData;
+        return (
+          <QuickActions
+            data={data}
+            onAction={handleQuickAction}
+          />
+        );
+      }
+      default:
+        return null;
+    }
+  };
 
   return (
     <div
@@ -50,11 +132,20 @@ export function ChatMessage({ message }: ChatMessageProps) {
             })}
           </span>
         </div>
+        
+        {/* Text Content */}
         <div className="prose prose-invert prose-sm max-w-none">
           <div className="whitespace-pre-wrap text-foreground/90 leading-relaxed">
             {formatMessage(message.content)}
           </div>
         </div>
+
+        {/* Rich Content */}
+        {message.richContent && (
+          <div className="mt-3">
+            {renderRichContent(message.richContent)}
+          </div>
+        )}
       </div>
     </div>
   );
