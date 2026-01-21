@@ -116,7 +116,7 @@ export function ChatInterface({ ownerId, className }: ChatInterfaceProps) {
 
         {/* Chat Messages */}
         {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
+          <ChatMessage key={message.id} message={message} onSendMessage={sendMessage} />
         ))}
 
         {/* Loading Indicator */}
