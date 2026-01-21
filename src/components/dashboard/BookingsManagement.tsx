@@ -76,7 +76,7 @@ export function BookingsManagement({ owner }: BookingsManagementProps) {
         .order('booking_date', { ascending: false });
 
       if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
+        query = query.eq('status', statusFilter as Tables<'bookings'>['status']);
       }
 
       const { data } = await query;
