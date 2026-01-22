@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ChatMessage } from '@/types/database';
+import { supabase } from '@/integrations/supabase/client';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
@@ -55,11 +56,15 @@ export function useChat(options: UseChatOptions = {}) {
         content: m.content,
       }));
 
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      const fallbackAnon = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
       const resp = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${accessToken ?? fallbackAnon}`,
         },
         body: JSON.stringify({
           messages: messagesForAPI,
@@ -72,6 +77,29 @@ export function useChat(options: UseChatOptions = {}) {
         throw new Error(errorData.error || 'Erro ao enviar mensagem');
       }
 
+      const contentType = resp.headers.get('content-type') || '';
+
+      // JSON response (used for rich components)
+      if (contentType.includes('application/json')) {
+        const json = await resp.json();
+        const serverMessage = json?.message ?? json;
+        const assistantText = serverMessage?.content ?? '';
+        const richContent = serverMessage?.richContent;
+
+        setMessages(prev => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: 'assistant' as const,
+            content: assistantText,
+            richContent,
+            created_at: new Date().toISOString(),
+          },
+        ]);
+        return;
+      }
+
+      // SSE streaming fallback
       if (!resp.body) throw new Error('No response body');
 
       const reader = resp.body.getReader();

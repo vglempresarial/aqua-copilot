@@ -9,7 +9,7 @@ import { ptBR } from 'date-fns/locale';
 
 interface BookingCalendarProps {
   data: BookingCalendarData;
-  onSelectDate?: (date: string) => void;
+  onSelectDate?: (boatId: string, date: string) => void;
 }
 
 export function BookingCalendar({ data, onSelectDate }: BookingCalendarProps) {
@@ -26,7 +26,7 @@ export function BookingCalendar({ data, onSelectDate }: BookingCalendarProps) {
     if (blockedDates.has(dateStr)) return;
     
     setSelectedDate(date);
-    onSelectDate?.(dateStr);
+    onSelectDate?.(data.boatId, dateStr);
   };
 
   const modifiers = {
@@ -87,7 +87,14 @@ export function BookingCalendar({ data, onSelectDate }: BookingCalendarProps) {
                 </strong>
               </span>
             </div>
-            <Button size="sm" className="gradient-button">
+            <Button
+              size="sm"
+              className="gradient-button"
+              onClick={() => {
+                const dateStr = format(selectedDate, 'yyyy-MM-dd');
+                onSelectDate?.(data.boatId, dateStr);
+              }}
+            >
               Continuar
             </Button>
           </div>

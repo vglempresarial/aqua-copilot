@@ -133,7 +133,8 @@ export type RichContentType =
   | 'boat_carousel'
   | 'booking_calendar'
   | 'booking_summary'
-  | 'quick_actions';
+  | 'quick_actions'
+  | 'payment_link';
 
 export interface RichContent {
   type: RichContentType;
@@ -145,7 +146,8 @@ export type RichContentData =
   | BoatCarouselData
   | BookingCalendarData
   | BookingSummaryData
-  | QuickActionsData;
+  | QuickActionsData
+  | PaymentLinkData;
 
 export interface BoatCardData {
   type: 'boat_card';
@@ -202,6 +204,14 @@ export interface QuickActionsData {
     action: string;
     variant?: 'primary' | 'secondary' | 'outline';
   }>;
+}
+
+export interface PaymentLinkData {
+  type: 'payment_link';
+  bookingId: string;
+  url: string;
+  amount: number;
+  note?: string;
 }
 
 export const BOAT_TYPE_LABELS: Record<BoatType, string> = {

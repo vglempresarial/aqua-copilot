@@ -35,7 +35,7 @@ const mainNavItems = [
 ];
 
 const ownerNavItems = [
-  { title: 'Painel do Proprietário', url: '/proprietario/dashboard', icon: Ship },
+  { title: 'Painel do Proprietário', url: '/dashboard', icon: Ship },
 ];
 
 const footerNavItems = [

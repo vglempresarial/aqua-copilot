@@ -6,10 +6,11 @@ import {
   BoatCarouselData, 
   BookingCalendarData, 
   BookingSummaryData, 
-  QuickActionsData 
+  QuickActionsData,
+  PaymentLinkData
 } from '@/types/database';
 import { cn } from '@/lib/utils';
-import { BoatCard, BoatCarousel, BookingCalendar, BookingSummary, QuickActions } from './rich';
+import { BoatCard, BoatCarousel, BookingCalendar, BookingSummary, QuickActions, PaymentLink } from './rich';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -28,12 +29,16 @@ export function ChatMessage({ message, onSendMessage }: ChatMessageProps) {
     console.log('Favorited boat:', boatId);
   };
 
-  const handleSelectDate = (date: string) => {
-    onSendMessage?.(`Selecionei a data ${date}`);
+  const handleSelectDate = (boatId: string, date: string) => {
+    onSendMessage?.(`Selecionei a data ${date} para a embarcação ${boatId}`);
   };
 
   const handleQuickAction = (action: string) => {
     onSendMessage?.(action);
+  };
+
+  const handleConfirmBooking = (boatId: string, date: string) => {
+    onSendMessage?.(`Confirmar reserva para a embarcação ${boatId} na data ${date}`);
   };
 
   const renderRichContent = (richContent: RichContent) => {
@@ -72,7 +77,7 @@ export function ChatMessage({ message, onSendMessage }: ChatMessageProps) {
         return (
           <BookingSummary
             data={data}
-            onConfirm={() => onSendMessage?.('Confirmar reserva')}
+            onConfirm={handleConfirmBooking}
             onCancel={() => onSendMessage?.('Cancelar reserva')}
           />
         );
@@ -85,6 +90,10 @@ export function ChatMessage({ message, onSendMessage }: ChatMessageProps) {
             onAction={handleQuickAction}
           />
         );
+      }
+      case 'payment_link': {
+        const data = richContent.data as PaymentLinkData;
+        return <PaymentLink data={data} />;
       }
       default:
         return null;

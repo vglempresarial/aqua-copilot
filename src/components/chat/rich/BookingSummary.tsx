@@ -8,7 +8,7 @@ import { ptBR } from 'date-fns/locale';
 
 interface BookingSummaryProps {
   data: BookingSummaryData;
-  onConfirm?: () => void;
+  onConfirm?: (boatId: string, date: string) => void;
   onCancel?: () => void;
 }
 
@@ -88,7 +88,10 @@ export function BookingSummary({ data, onConfirm, onCancel }: BookingSummaryProp
           <Button variant="outline" className="flex-1" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button className="flex-1 gradient-button" onClick={onConfirm}>
+          <Button
+            className="flex-1 gradient-button"
+            onClick={() => onConfirm?.(booking.boatId, booking.date)}
+          >
             <Check className="h-4 w-4 mr-1" />
             Confirmar Reserva
           </Button>

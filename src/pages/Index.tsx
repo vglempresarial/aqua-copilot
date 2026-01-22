@@ -1,14 +1,12 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { MainLayout } from '@/components/layout/MainLayout';
+import { ChatInterface } from '@/components/chat/ChatInterface';
 
-const Index = () => {
+export default function Index() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <MainLayout>
+      <div className="flex-1">
+        <ChatInterface />
       </div>
-    </div>
+    </MainLayout>
   );
-};
-
-export default Index;
+}
